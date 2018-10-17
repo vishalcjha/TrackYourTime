@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">TrackYourTime</string>
+    <string name="add_sample_data">Add Sample Data</string>
+    <string name="clear_sample_data">Clear Sample Data</string>
+    <string name="learn_more">Learn More</string>
+    <string name="what_we_do">We monitor time duration between you turned onn screen and time at which screen went to sleep. We count number of time you do it. We display this data on hourly basis. By Tracking you time you can better utilize it.</string>
+    <string name="no_data_yet">No Data Yet</string>
+</resources>
