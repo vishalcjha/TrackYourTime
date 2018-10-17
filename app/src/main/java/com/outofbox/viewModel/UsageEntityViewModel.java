@@ -76,4 +76,8 @@ public class UsageEntityViewModel extends AndroidViewModel {
     public void deleteUsage() {
         usageEntityRepository.deleteAllEntity();
     }
+
+    public void insertEntity(UsageEntity usageEntity) {
+        usageEntityRepository.insertEntity(usageEntity);
+    }
 }

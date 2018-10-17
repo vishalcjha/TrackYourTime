@@ -2,6 +2,7 @@ package com.outofbox.repository;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import android.util.Log;
 
 import com.outofbox.model.TrackTimeDatabase;
 import com.outofbox.model.UsageEntity;
@@ -17,6 +18,7 @@ public class UsageEntityRepository {
     private UsageEntityDao usageEntityDao;
     private LiveData<List<UsageEntity>> usageEntities;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static final String TAG = UsageEntityRepository.class.getSimpleName();
 
     public UsageEntityRepository(Application application) {
         TrackTimeDatabase db = TrackTimeDatabase.getDatabase(application);
@@ -28,6 +30,7 @@ public class UsageEntityRepository {
         executor.execute(new Runnable() {
             @Override
             public void run() {
+                Log.d(TAG, "run: Adding new usage" + usageEntity);
                 usageEntityDao.insertUsageEntity(usageEntity);
             }
         });

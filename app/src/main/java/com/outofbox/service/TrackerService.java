@@ -9,6 +9,12 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.outofbox.model.UsageEntity;
+import com.outofbox.repository.UsageEntityRepository;
+import com.outofbox.viewModel.UsageEntityViewModel;
+
+import org.joda.time.DateTime;
+
 public class TrackerService extends Service {
     private static final String TAG = TrackerService.class.getSimpleName();
     public TrackerService() {
@@ -24,7 +30,7 @@ public class TrackerService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate: ");
-        BroadcastReceiver screenAction = new ScreenAction();
+        BroadcastReceiver screenAction = new ScreenAction(new DateTime(), null);
         registerReceiver(screenAction, ScreenAction.getIntentFilter());
     }
 
@@ -38,17 +44,31 @@ public class TrackerService extends Service {
     }
 
     public static class ScreenAction extends BroadcastReceiver {
+        private DateTime lastActionTime;
+        private UsageEntityViewModel usageEntityViewModel;
+
+        public ScreenAction(DateTime lastActionTime, UsageEntityViewModel usageEntityViewModel) {
+            this.lastActionTime = lastActionTime;
+            this.usageEntityViewModel = usageEntityViewModel;
+        }
+
         //private static final String TAG = ScreenAction.class.getSimpleName();
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean screenOff = false;
+            if (lastActionTime != null) {
+                Log.d(TAG, "onReceive: Last Action Time " + lastActionTime);
+            }
             Log.d(TAG, "OnReceive of ScreenAction");
             switch (intent.getAction()) {
                 case Intent.ACTION_SCREEN_OFF:
+                    usageEntityViewModel.insertEntity(new UsageEntity(lastActionTime, new DateTime()));
+                    lastActionTime = null;
                     screenOff = true;
                     Log.d(TAG, "onReceive: " + intent.getAction());
                     break;
                 case Intent.ACTION_SCREEN_ON:
+                    lastActionTime = new DateTime();
                     screenOff = false;
                     Log.d(TAG, "onReceive: " + intent.getAction());
                     break;

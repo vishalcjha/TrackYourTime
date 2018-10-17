@@ -2,6 +2,8 @@ package com.outofbox.trackyourtime;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
@@ -22,6 +24,8 @@ import com.outofbox.ui.DailyUsageSwipableAdapter;
 import com.outofbox.utility.SampleUsageEntityData;
 import com.outofbox.viewModel.UsageEntityViewModel;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +40,7 @@ public class HomePageActivity extends AppCompatActivity {
     private List<UsageEntityView> usageEntitiesByDay = new ArrayList<>();
 
     private TrackerService trackerService;
+    private BroadcastReceiver screenOnOffReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,22 @@ public class HomePageActivity extends AppCompatActivity {
         pagerTitleStrip = findViewById(R.id.pager_title_strip);
         initViewModel();
         initService();
+        registerBroadCastReceiver();
+    }
+
+    private void registerBroadCastReceiver() {
+        screenOnOffReceiver = new TrackerService.ScreenAction(new DateTime(), viewModel);
+        registerReceiver(screenOnOffReceiver, TrackerService.ScreenAction.getIntentFilter());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterBroadCastReceiver();
+    }
+
+    private void unregisterBroadCastReceiver() {
+        unregisterReceiver(screenOnOffReceiver);
     }
 
     private void initService() {
@@ -120,4 +141,5 @@ public class HomePageActivity extends AppCompatActivity {
     private void addSampleData() {
         viewModel.addSampleData(SampleUsageEntityData.getPreFilledSampleEntities(7));
     }
+
 }
